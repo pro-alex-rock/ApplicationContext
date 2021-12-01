@@ -1,5 +1,6 @@
 package com.context;
 
+import com.EmailSender;
 import com.context.model.Bean;
 import com.context.model.BeanDefinition;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 public class ClassPathApplicationContext implements ApplicationContext {
 
     private BeanDefinitionReader beanDefinitionReader;
-    private final List<Bean> beans;
+    private List<Bean> beans;
 
     public ClassPathApplicationContext(String... xmlFiles) throws IOException {
         beanDefinitionReader = new XmlBeanDefinitionReader();
@@ -56,7 +57,9 @@ public class ClassPathApplicationContext implements ApplicationContext {
         for (BeanDefinition beanDefinition : beanDefinitions) {
             beans.add(extractBean(beanDefinition));
         }
-        System.out.println(beans);
+        for (Bean bean : beans) {
+            System.out.println(bean.getId() + "---" + bean.getValue().toString());
+        }
         return beans;
     }
 
@@ -67,9 +70,9 @@ public class ClassPathApplicationContext implements ApplicationContext {
         Object instance = null;
         Class clazz = null;
         try {
-            clazz = classPath.getClass();
+            clazz = Class.forName(classPath);
             instance = clazz.getDeclaredConstructor().newInstance();
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException("Couldn't get bean`s constructor", e);
         } catch (InvocationTargetException e) {
             throw new RuntimeException("Couldn't create bean", e);
@@ -80,7 +83,13 @@ public class ClassPathApplicationContext implements ApplicationContext {
     }
 
     private void injectValueDependencies(List<BeanDefinition> definitions, List<Bean> beans) {
-
+        for (Bean bean : beans) {
+            for (BeanDefinition definition : definitions) {
+                if (bean.getId().equals(definition.getId())) {
+                    //bean.getValue()
+                }
+            }
+        }
     }
 
     private void injectRefDependencies(List<BeanDefinition> definitions, List<Bean> beans) {
@@ -96,6 +105,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
     }
 
     public static void main(String[] args) throws IOException {
+        System.out.println(EmailSender.class.getName());
         new ClassPathApplicationContext("context.xml");
     }
 }
