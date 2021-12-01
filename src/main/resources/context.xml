@@ -1,0 +1,17 @@
+<beans>
+    <bean id="emailSender" class="com.model.DefaultEmailService">
+        <property name="protocol" value="POP3"/>
+        <property name="port" value="899"/>
+    </bean>
+
+    <bean id="helloUserService" class="com.UserService">
+        <property name="message" value="hello!"/>
+        <property name="emailSender" ref="popEmailSender"/>
+    </bean>
+
+    <bean id="byeUserService" class="com.UserService">
+        <property name="message" value="bye!"/>
+        <property name="emailSender" ref="popEmailSender"/>
+    </bean>
+
+</beans>
