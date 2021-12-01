@@ -1,9 +1,6 @@
-package com;
+package com.context;
 
-import com.model.BeanDefinition;
-import com.model.Property;
-import com.model.RefProperty;
-import com.model.ValueProperty;
+import com.context.model.BeanDefinition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,7 +13,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class XmlBeanDefinitionReader implements BeanDefinitionReader {
 
@@ -27,7 +27,7 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
     }
 
     @Override
-    public List<BeanDefinition> readBeanDefinitions(String path) { //TODO file parsing
+    public List<BeanDefinition> readBeanDefinitions(String path) {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
@@ -41,7 +41,7 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             document = documentBuilder.parse(inputStream);
         } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new RuntimeException("Couldn`t parse file: " + path, e);
+            throw new RuntimeException("Couldn't parse file: " + path, e);
         }
         return parsingDocument(document);
     }
@@ -70,16 +70,12 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
         beanDefinition.setClassName(className);
 
         NodeList propertyList = element.getElementsByTagName("property");
-        /*beanDefinition.setValueDependencies(getDependencies(propertyList, "value"));
-        beanDefinition.setRefDependencies(getDependencies(propertyList, "ref"));*/
-        beanDefinition.setValueProperties(getDependencies(propertyList, "value"));
-        beanDefinition.setRefProperties(getDependencies(propertyList, "ref"));
-        System.out.println(beanDefinition);
-        System.out.println("----------------------------------");
+        beanDefinition.setValueDependencies(getDependencies(propertyList, "value"));
+        beanDefinition.setRefDependencies(getDependencies(propertyList, "ref"));
         return beanDefinition;
     }
 
-    /*private List<Property> getDependencies(NodeList propertyList, String flag) {
+    private Map<String, String> getDependencies(NodeList propertyList, String flag) {
         Map<String, String> properties = new HashMap<>();
 
         for (int i = 0; i < propertyList.getLength(); i++) {
@@ -89,46 +85,12 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
                 Element element = (Element) node;
                 String name = element.getAttribute("name");
                 String attribute = element.getAttribute(flag);
-
-                properties.put("name", name);
-                properties.put(flag, attribute);
-            }
-        }
-        return properties;
-    }*/
-
-    private List<ValueProperty> getValueProperties(NodeList propertyList) {
-        List<ValueProperty> valueProperties = new ArrayList<>();
-
-    }
-
-    private List<Property> getDependencies(NodeList propertyList, String flag) {
-        List<Property> properties = new ArrayList<>();
-
-        for (int i = 0; i < propertyList.getLength(); i++) {
-            Node node = propertyList.item(i);
-
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) node;
-                String name = element.getAttribute("name");
-                String attribute = element.getAttribute(flag);
-                if (flag.equals("value")) {
-                    if (!attribute.equals(flag)) {
-                        continue;
-                    }
-                    properties.add(new ValueProperty(name, attribute));
-                } else if (flag.equals("ref")) {
-                    if (!attribute.equals(flag)) {
-                        continue;
-                    }
-                    properties.add(new RefProperty(name, attribute));
+                if (attribute != null && !attribute.equals("")) {
+                    properties.put(name, attribute);
                 }
+
             }
         }
         return properties;
-    }
-
-    public static void main(String[] args) {
-        new XmlBeanDefinitionReader().readBeanDefinitions("context.xml");
     }
 }

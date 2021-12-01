@@ -1,5 +1,5 @@
 <beans>
-    <bean id="emailSender" class="com.model.DefaultEmailService">
+    <bean id="emailSender" class="com.context.model.DefaultEmailService">
         <property name="protocol" value="POP3"/>
         <property name="port" value="899"/>
     </bean>

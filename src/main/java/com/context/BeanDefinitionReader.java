@@ -1,6 +1,6 @@
-package com;
+package com.context;
 
-import com.model.BeanDefinition;
+import com.context.model.BeanDefinition;
 
 import java.util.List;
 

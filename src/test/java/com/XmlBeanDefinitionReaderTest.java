@@ -1,6 +1,7 @@
 package com;
 
-import com.model.BeanDefinition;
+import com.context.XmlBeanDefinitionReader;
+import com.context.model.BeanDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
